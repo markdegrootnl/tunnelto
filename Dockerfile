@@ -1,12 +1,15 @@
-FROM alpine:latest
+FROM clux/muslrust:stable AS build
 
-COPY ./target/x86_64-unknown-linux-musl/release/tunnelto_server /tunnelto_server
+COPY . .
 
-# client svc
-EXPOSE 8080
-# ctrl svc
-EXPOSE 5000
-# net svc
-EXPOSE 10002
+RUN cargo build --bins --release
 
-ENTRYPOINT ["/tunnelto_server"]
+
+FROM alpine:3.21
+
+RUN apk add --no-cache tini openssl
+ENTRYPOINT ["/sbin/tini", "--"]
+
+COPY --from=build /volume/target/*-unknown-linux-musl/release/tunnelto /volume/target/*-unknown-linux-musl/release/tunnelto_server /usr/local/bin/
+
+CMD ["tunnelto"]
