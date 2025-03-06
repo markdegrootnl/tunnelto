@@ -7,6 +7,7 @@ use std::fmt::Formatter;
 pub mod auth_db;
 pub mod client_auth;
 pub mod reconnect_token;
+pub mod auth_token;
 
 #[derive(Clone)]
 pub struct SigKey([u8; 32]);
